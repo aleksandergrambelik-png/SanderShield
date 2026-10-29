@@ -1,0 +1,5 @@
+obj/
+*.dex
+*.unaligned.apk
+*.class
+.DS_Store
