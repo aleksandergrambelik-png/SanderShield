@@ -16,7 +16,7 @@ SanderShield is a lightweight, zero-dependency Mobile Security Suite built entir
 
 | Vulnerability Scan (OWASP) | CVE Checker |
 | :---: | :---: |
-| <img src="screenshots/Screenshot-Test-Vuln-demo.owasp.juice.shop.jpg" width="400"> | <img src="screenshots/Screenshot-CVE Check.jpg" width="400"> |
+| <img src="screenshots/owasp.jpg" width="400"> | <img src="screenshots/Screenshot-CVE Check.jpg" width="400"> |
 
 | Privacy & Anti-Tracker | GPS & Sensor Data |
 | :---: | :---: |
