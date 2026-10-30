@@ -1,34 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sander.shield"
     android:versionCode="1"
-android:versionName="34.0">
-    
-    <!-- Izin Dasar -->
+    android:versionName="38.0">
+
+    <!-- Izin Dasar Jaringan -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <!-- Izin untuk Signal & WiFi Scanner -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    
+    <!-- Izin Hardware & Sensor -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-<uses-permission android:name="android.permission.INTERNET"/>
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-<uses-permission android:name="android.permission.CAMERA"/>
-<uses-feature android:name="android.hardware.camera" android:required="false"/>
-<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-  
-<application android:label="SanderShield" 
-                 android:icon="@drawable/icon"
-                 android:theme="@android:style/Theme.Material.NoActionBar">
-        <activity android:name=".MainActivity" android:exported="true">
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    
+    <!-- Izin Storage (Buat Hex Viewer & Camera) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
+    <application 
+        android:label="SanderShield"
+        android:icon="@drawable/icon"
+        android:theme="@android:style/Theme.Material.NoActionBar">
+        
+        <!-- SPLASH SCREEN (Yang muncul pertama kali) -->
+        <activity 
+            android:name=".SplashScreen" 
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- MAIN ACTIVITY (Disembunyiin, dipanggil setelah Splash) -->
+        <activity 
+            android:name=".MainActivity" 
+            android:exported="false" 
+            android:windowSoftInputMode="adjustResize" />
+            
     </application>
 </manifest>

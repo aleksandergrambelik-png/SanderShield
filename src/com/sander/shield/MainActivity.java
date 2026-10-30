@@ -29,6 +29,8 @@ import com.sander.shield.tools.SensorReader;
 import com.sander.shield.tools.WgetFetcher;
 import com.sander.shield.tools.StealthDefenseEngine;
 import com.sander.shield.tools.CameraTool;
+import com.sander.shield.tools.HexViewer;
+import com.sander.shield.tools.HardwareMonitor;
 import com.sander.shield.vuln.VulnScanner;
 import com.sander.shield.vuln.CveChecker;
 import com.sander.shield.vuln.IpInfo;
@@ -66,6 +68,8 @@ public class MainActivity extends Activity {
     GpsBlocker gpsBlocker = new GpsBlocker();
     WifiScanner wifiScanner = new WifiScanner();
     SafetyGuard safetyGuard = new SafetyGuard();
+    HexViewer hexViewer = new HexViewer();
+    HardwareMonitor hardwareMonitor = new HardwareMonitor();
     
     boolean isPhisingBotActive = false;
 
@@ -79,14 +83,12 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Request Location Permission for WiFi & GPS
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.READ_PHONE_STATE
-                }, 100);
-            }
+            requestPermissions(new String[]{
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }, 100);
         }
 
         LinearLayout mainLayout = new LinearLayout(this);
@@ -96,9 +98,16 @@ public class MainActivity extends Activity {
         buildUI(mainLayout);
         setContentView(mainLayout);
         
-String banner = "SANDER_OS v34.0 (PUBLIC)\n[ SYSTEM READY ]\n===================\n";
-appendLog(banner + "Source: github.com/aleksandergrambelik-png/SanderShield\n", colorGreen);
-appendLog("Type 'help' for commands.\n\n", colorCyan);
+        String banner = 
+            "  ____                 _   ____  _     _      _     _ \n" +
+            " / ___|  __ _ _ __   __| | / ___|| |__ (_) ___| | __| |\n" +
+            " \\___ \\ / _` | '_ \\ / _` | \\___ \\| '_ \\| |/ _ \\ |/ _` |\n" +
+            "  ___) | (_| | | | | (_| |  ___) | | | | |  __/ | (_| |\n" +
+            " |____/ \\__,_|_| |_|\\__,_| |____/|_| |_|_|\\___|_|\\__,_|\n" +
+            "                        [ v38.0 ULTIMATE ]\n";
+            
+        appendLog(banner, colorGreen);
+        appendLog("Source: github.com/aleksandergrambelik-png/SanderShield\n\n", colorCyan);
         showMenu("RECON"); 
     }
 
@@ -300,6 +309,19 @@ appendLog("Type 'help' for commands.\n\n", colorCyan);
             controlPanel.addView(createCtrlBtn("PHONE INFO", colorWhite, new View.OnClickListener() { @Override public void onClick(View v) { getPhoneInfo(); } }));
             controlPanel.addView(createCtrlBtn("WIFI INFO", colorWhite, new View.OnClickListener() { @Override public void onClick(View v) { getWifiInfo(); } }));
             controlPanel.addView(createCtrlBtn("CAMERA", colorWhite, new View.OnClickListener() { @Override public void onClick(View v) { openCamera(); } }));
+            controlPanel.addView(createCtrlBtn("HEX VIEWER", colorCyan, new View.OnClickListener() { 
+                @Override public void onClick(View v) { 
+                    appendLog("> Type: hex /sdcard/Download/yourfile.jpg\n", colorYellow);
+                } 
+            }));
+            controlPanel.addView(createCtrlBtn("HW MONITOR", colorGreen, new View.OnClickListener() { 
+                @Override public void onClick(View v) { 
+                    appendLog("> Starting Hardware Monitor...\n", colorYellow);
+                    hardwareMonitor.startMonitoring(MainActivity.this, new HardwareMonitor.MonitorCallback() {
+                        @Override public void onUpdate(String json) { appendLog(json, colorGreen); }
+                    });
+                } 
+            }));
         }
     }
 
@@ -307,11 +329,12 @@ appendLog("Type 'help' for commands.\n\n", colorCyan);
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100) {
-            if (grantResults.length > 0 && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                appendLog("[+] Permission Granted.\n", colorGreen);
-            } else {
-                appendLog("[!] Permission Denied. Some features won't work.\n", colorRed);
+            boolean allGranted = true;
+            for (int result : grantResults) {
+                if (result != android.content.pm.PackageManager.PERMISSION_GRANTED) { allGranted = false; break; }
             }
+            if (allGranted) appendLog("[+] Permissions Granted.\n", colorGreen);
+            else appendLog("[!] Permissions Denied. Some features won't work.\n", colorRed);
         }
     }
 
@@ -462,7 +485,7 @@ appendLog("Type 'help' for commands.\n\n", colorCyan);
         appendLog("root@sander:~# " + cmdLine + "\n", colorCyan);
 
         if (cmd.equals("help")) {
-            appendLog("Commands:\n- clear\n- ping <host>\n- scan <ip>\n- ipinfo <ip>\n- wget <url>\n- vuln <url>\n- cve <CVE-ID>\n- tracker\n- wifiscan\n- antitracker\n- gpsguard\n- safety\n- gps on/off\n- sensor on/off\n- phoneinfo\n- wifiinfo\n", colorWhite);
+            appendLog("Commands:\n- clear\n- ping <host>\n- scan <ip>\n- ipinfo <ip>\n- wget <url>\n- vuln <url>\n- cve <CVE-ID>\n- tracker\n- wifiscan\n- antitracker\n- gpsguard\n- safety\n- hex <path>\n- gps on/off\n- sensor on/off\n- phoneinfo\n- wifiinfo\n", colorWhite);
         } else if (cmd.equals("clear")) {
             tvTerminal.setText("root@sander:~# \n");
         } else if (cmd.equals("ping")) {
@@ -531,6 +554,17 @@ appendLog("Type 'help' for commands.\n\n", colorCyan);
             safetyGuard.verifyIntegrity(this, new SafetyGuard.GuardCallback() {
                 @Override public void onResult(String json, int colorType) {
                     appendLog(json, colorType == 1 ? colorRed : colorGreen);
+                }
+            });
+        } else if (cmd.equals("hex") && parts.length > 1) {
+            String path = parts[1];
+            appendLog("> Reading HEX from: " + path + "\n", colorYellow);
+            hexViewer.readFile(path, new HexViewer.HexCallback() {
+                @Override public void onResult(String hexOutput) { 
+                    appendLog(hexOutput, colorGreen); 
+                }
+                @Override public void onError(String error) { 
+                    appendLog("{\"error\":\"" + error + "\"}\n", colorRed); 
                 }
             });
         } else if (cmd.equals("phoneinfo")) {
