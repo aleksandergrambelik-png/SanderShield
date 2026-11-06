@@ -4,6 +4,17 @@
 [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
 [![Size](https://img.shields.io/badge/Size-~630KB-brightgreen.svg)]()
 
+> "You bad days, stop me? Nah. 
+> Try me. 
+> The app is crashing, the girl is sulking, the compiler is screaming. 
+> But I'm still here. 
+> Still pushing. Still laughing.
+> 
+> You bad days, you can't stop me. 
+> I'm the storm you can't contain."
+
+
+
 SanderShield is a lightweight, zero-dependency Mobile Security Suite built entirely on Android using Termux. It is written in 100% Native Java without Gradle or Android Studio, designed for security researchers and bug bounty hunters who need a portable toolkit on the go.
 
 > **Download APK:** [SanderShield.apk](https://github.com/aleksandergrambelik-png/SanderShield/raw/main/SanderShield.apk)
@@ -65,4 +76,6 @@ This tool is for educational purposes and authorized security testing only. Do n
 ## Credits
 
 - **Creator & Lead Developer:** [Aleksander Titan Pabiyuri (aleksandergrambelik-png)](https://github.com/aleksandergrambelik-png)
+
 - **Co-Pilot & Assistant:** DeepSeek AI
+  
